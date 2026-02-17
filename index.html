@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ONPI Token Pre-Sale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- PAGINA DE LOGIN -->
+<div class="container" id="loginPage">
+  <h1>ONPI Token</h1>
+  <p class="subtitle">Conectează-te pentru a continua</p>
+
+  <form id="loginForm">
+    <div class="form-group">
+      <label for="loginCont">Cont (Username)</label>
+      <input type="text" id="loginCont" required placeholder="numele_tău">
+    </div>
+
+    <div class="form-group password-group">
+      <label for="loginParola">Parolă</label>
+      <input type="password" id="loginParola" required minlength="6">
+      <span class="toggle-password" onclick="togglePassword('loginParola')">👁</span>
+    </div>
+
+    <button type="submit" class="btn-login">Login</button>
+  </form>
+
+  <button class="btn-register" onclick="switchToRegister()">Înregistrează-te</button>
+
+  <div id="loginStatus" class="status"></div>
+</div>
+
+<!-- PAGINA DE ÎNREGISTRARE -->
+<div class="container hidden" id="registerPage">
+  <h1>ONPI Token</h1>
+  <p class="subtitle">Creează-ți contul pentru a continua.</p>
+
+  <form id="registerForm">
+    <div class="form-group">
+      <label for="nume">Nume complet</label>
+      <input type="text" id="nume" required placeholder="Ion Popescu" minlength="3">
+    </div>
+
+    <div class="form-group">
+      <label for="cont">Cont (Username)</label>
+      <input type="text" id="cont" required placeholder="numele_tău (doar litere mici, cifre, ._-)" minlength="4">
+    </div>
+
+    <div class="form-group password-group">
+      <label for="parola">Parolă</label>
+      <input type="password" id="parola" required minlength="6" placeholder="Minimum 6 caractere">
+      <span class="toggle-password" onclick="togglePassword('parola')">👁</span>
+    </div>
+
+    <div class="form-group password-group">
+      <label for="confirmParola">Confirmă parolă</label>
+      <input type="password" id="confirmParola" required minlength="6" placeholder="Reintrodu parolă">
+      <span class="toggle-password" onclick="togglePassword('confirmParola')">👁</span>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Adresă de email</label>
+      <input type="email" id="email" required placeholder="exemplu@gmail.com">
+    </div>
+
+    <div class="form-group">
+      <label for="telegram">ID Telegram</label>
+      <input type="text" id="telegram" required placeholder="@numele_tău">
+    </div>
+
+    <div class="form-group">
+      <label for="telefon">Număr de telefon</label>
+      <input type="tel" id="telefon" required placeholder="+40 712 345 678">
+    </div>
+
+    <div class="terms">
+      Prin apăsarea butonului confirm că accept termenii și politica de confidențialitate.
+    </div>
+
+    <button type="submit">Înregistrează-mă</button>
+  </form>
+
+  <button class="switch-btn" onclick="switchToLogin()">Am deja cont? → Login</button>
+
+  <div id="status" class="status"></div>
+</div>
+
+<!-- PAGINA DE DASHBOARD -->
+<div class="container hidden" id="dashboardPage">
+  <h1 class="dashboard-welcome">Dashboard ONPI</h1>
+
+  <!-- Banner pre-sale -->
+  <div style="background:rgba(246,70,93,0.2); border:1px solid var(--accent); color:var(--accent); padding:16px; border-radius:12px; margin-bottom:1.5rem; text-align:center; font-weight:600;">
+    <strong>PRE-SALE ÎN CURS – Februarie 2026</strong><br>
+    Achizițiile sunt simulate în platformă.<br>
+    Plata reală SOL va fi procesată manual după închiderea rundei.
+  </div>
+
+  <div class="sold-balance">
+    <span class="usd" id="dashSoldValue">0</span> $
+    <span class="tokens">Sold ONPI: <span id="dashSold">0</span></span>
+  </div>
+
+  <div class="sold-balance" style="margin-top:1rem; border-color:var(--green);">
+    <span style="color:var(--green);">Stake activ: <span id="dashStakeSold">0</span> ONPI</span>
+  </div>
+
+  <button class="withdraw-btn" onclick="goToWithdrawal()">Retragere</button>
+
+  <div class="dashboard-actions">
+    <button class="dashboard-btn profile-btn" onclick="openProfile()">👤 Profil</button>
+    <button class="dashboard-btn password-btn" onclick="changePassword()">🔐 Schimbă parolă</button>
+    <button id="btnPackages" class="dashboard-btn packages-btn" onclick="openPackages(false)">📦 Pachete</button>
+    <button id="btnChangePackage" class="dashboard-btn change-package-btn" onclick="openPackages(true)">🔄 Adaugă pachet</button>
+    <button class="dashboard-btn stake-btn" onclick="openStake()">💰 Stake ONPI</button>
+    <button class="dashboard-btn instructions-btn" onclick="openInstructions()">📖 Instrucțiuni</button>
+    <button class="dashboard-btn logout-btn" onclick="logout()">🚪 Deconectare</button>
+  </div>
+
+  <div style="margin-top:2rem; padding:20px; background:rgba(30,35,41,0.8); border-radius:16px; border:1px solid var(--primary); height:320px;">
+    <h3 style="text-align:center; color:var(--primary); margin-bottom:1rem;">Evoluție preț ONPI (ultimele 24h)</h3>
+    <canvas id="priceChart" height="220"></canvas>
+  </div>
+
+  <div id="dashboardStatus" class="status"></div>
+</div>
+
+<!-- PAGINA PROFIL -->
+<div class="container hidden" id="profilePage">
+  <h1>Profilul meu</h1>
+
+  <div class="profile-section">
+    <p><strong>Nume complet:</strong> <span id="dashNume">—</span></p>
+    <p><strong>Cont (Username):</strong> <span id="dashCont">—</span></p>
+    <p><strong>Email:</strong> <span id="dashEmail">—</span></p>
+    <p><strong>Telegram ID:</strong> <span id="dashTelegram">—</span></p>
+    <p><strong>Telefon:</strong> <span id="dashTelefon">—</span></p>
+    <p><strong>Data înregistrării:</strong> <span id="dashDataInregistrare">—</span></p>
+    <p><strong>Sold ONPI:</strong> <span id="dashSoldPersonal">0</span> ONPI</p>
+    <p><strong>Sold Stake:</strong> <span id="dashStakePersonal">0</span> ONPI</p>
+    <p><strong>Pachete cumpărate:</strong> <span id="dashPachete">0</span></p>
+    <p><strong>Pachet activ:</strong> <span id="dashActivePackage">—</span></p>
+    <p><strong>Status cont:</strong> <span id="dashStatus">Activ</span></p>
+    <p><strong>Adresa wallet Solana:</strong> <span id="dashWallet">— (nu ai adăugat încă)</span></p>
+  </div>
+
+  <div style="margin-top:2rem;">
+    <button onclick="addWallet()" style="background:var(--primary); color:black; padding:16px; font-size:1.2rem;">
+      Adaugă / Modifică wallet Solana
+    </button>
+  </div>
+
+  <button onclick="switchToDashboard()" style="margin-top:1.5rem;">Înapoi la dashboard</button>
+</div>
+
+<!-- PAGINA PACHETE (doar Basic ca exemplu – adaugă celelalte 3 identic) -->
+<div class="container hidden" id="packagesPage">
+  <h1>Pachete disponibile</h1>
+  <p class="subtitle">Alege pachetul potrivit pentru tine (pre-sale)</p>
+
+  <div class="package-list">
+    <div class="package-card" id="card1">
+      <h3>Basic</h3>
+      <div class="price">50$</div>
+      <div class="tokens">7.500.000 ONPI (\~<span id="solEq50">calculând...</span> SOL)</div>
+      <div class="profit">Potențial multiplicare după listare</div>
+      <div class="dropdown-wrapper">
+        <button class="btn-select" onclick="toggleDropdown('card1')">Selectează</button>
+        <div class="dropdown-menu" id="dropdown1">
+          <button onclick="buyPackage('50')">Adaugă în pre-sale</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Copiază și modifică pentru Standard, Premium, Elite din codul tău original -->
+  </div>
+
+  <button onclick="switchToDashboard()" style="margin-top:2rem;">Înapoi la dashboard</button>
+</div>
+
+<!-- Adaugă aici și celelalte pagini: upgradePage, purchasePage, withdrawalPage, instructionsPage, instructionsGeneralPage, stakePage, interestCalcPage -->
+<!-- Pentru simplitate le poți copia din mesajele anterioare sau din codul tău original -->
+
+<script src="script.js"></script>
+</body>
+</html> 
