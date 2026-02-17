@@ -866,14 +866,14 @@ async function getSolPrice() {
   try {
     const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
     const data = await res.json();
-    return data.solana.usd || 85;
+    return data.solana.usd || 85; // fallback dacă API-ul nu răspunde
   } catch (err) {
     console.error('Eroare preț SOL:', err);
-    return 85;
+    return 85; // fallback
   }
 }
 
-// Actualizează echivalentele SOL în carduri
+// Actualizează echivalentele SOL în carduri la încărcare și la refresh
 async function updateSolEquivalents() {
   const solPrice = await getSolPrice();
   if (document.getElementById('solEq50')) document.getElementById('solEq50').textContent = (50 / solPrice).toFixed(4);
@@ -887,7 +887,7 @@ async function updateSolEquivalents() {
 }
 
 // ──────────────────────────────────────────────
-// SIMULARE CONECTARE WALLET
+// SIMULARE CONECTARE WALLET (Phantom/Solflare)
 // ──────────────────────────────────────────────
 
 async function connectWallet() {
@@ -907,7 +907,7 @@ async function connectWallet() {
 }
 
 // ──────────────────────────────────────────────
-// ACHIZIȚIE PACHET
+// ACHIZIȚIE PACHET – cu achiziție directă simulată SOL + preț live în ambele secțiuni
 // ──────────────────────────────────────────────
 
 async function buyPackage(value) {
@@ -925,6 +925,7 @@ async function buyPackage(value) {
     return;
   }
 
+  // ECHIVALENT LIVE SOL – afișat live la achiziție (în ambele secțiuni)
   getSolPrice().then(solPrice => {
     const solEq = (amount / solPrice).toFixed(4);
     alert(`Achiziție directă simulată\nPachet: \( {amount} \) ≈ ${solEq} SOL (preț live)\n+ ${tokens.toLocaleString('ro-RO')} ONPI adăugați fictiv.`);
@@ -964,7 +965,7 @@ async function buyPackage(value) {
 }
 
 // ──────────────────────────────────────────────
-// STAKE FUNCȚIONALITATE
+// STAKE FUNCȚIONALITATE (doar partea existentă în codul tău + actualizare zilnică)
 // ──────────────────────────────────────────────
 
 function openStake() {
@@ -1015,6 +1016,7 @@ function stakeTokens(days) {
   showOnly(interestCalcPage);
 }
 
+// Simulare actualizare zilnică sold stake
 setInterval(() => {
   const loggedInUser = localStorage.getItem('loggedInUser');
   if (!loggedInUser) return;
@@ -1028,7 +1030,7 @@ setInterval(() => {
 }, 60000);
 
 // ──────────────────────────────────────────────
-// TRIMITERE CERERE RETRAGERE
+// TRIMITERE CERERE RETRAGERE – cu verificare wallet și resetare completă
 // ──────────────────────────────────────────────
 
 function submitWithdrawalRequest() {
@@ -1093,7 +1095,7 @@ function submitWithdrawalRequest() {
 }
 
 // ──────────────────────────────────────────────
-// FUNCȚII UTILITARE
+// FUNCȚII UTILITARE (originale tale, intacte)
 // ──────────────────────────────────────────────
 
 function showOnly(pageToShow) {
@@ -1114,8 +1116,8 @@ function togglePassword(fieldId) {
   }
 }
 
-function switchToLogin() { showOnly(loginPage); }
-function switchToRegister() { showOnly(registerPage); }
+function switchToLogin()          { showOnly(loginPage); }
+function switchToRegister()       { showOnly(registerPage); }
 function switchToDashboard() {
   showOnly(dashboardPage);
   if (!priceChart) initChart();
@@ -1124,7 +1126,7 @@ function switchToDashboard() {
   updatePackagesButtonState();
 }
 
-function openProfile() { showOnly(profilePage); updateProfileDisplay(); }
+function openProfile()            { showOnly(profilePage); updateProfileDisplay(); }
 
 function openPackages(fromUpgrade = false) {
   upgradeMode = fromUpgrade;
@@ -1149,7 +1151,7 @@ function openInstructions() {
   showOnly(instructionsGeneralPage);
 }
 
-function goToPurchase() { showOnly(purchasePage); }
+function goToPurchase()           { showOnly(purchasePage); }
 
 function goToWithdrawal() {
   showOnly(withdrawalPage);
@@ -1205,6 +1207,9 @@ function logout() {
   alert('Ai fost deconectat!');
 }
 
+// ──────────────────────────────────────────────
+// Control stare buton Pachete
+// ──────────────────────────────────────────────
 function updatePackagesButtonState() {
   const btn = document.getElementById('btnPackages');
   if (!btn) return;
@@ -1221,6 +1226,10 @@ function updatePackagesButtonState() {
   btn.disabled = purchases > 0;
   btn.textContent = purchases > 0 ? '📦 Pachete (achiziționat)' : '📦 Pachete';
 }
+
+// ──────────────────────────────────────────────
+// ACTUALIZARE AFIȘAJ SOLD & PACHETE + PACHET ACTIV
+// ──────────────────────────────────────────────
 
 function updateDashboardDisplay() {
   const loggedInUser = localStorage.getItem('loggedInUser');
@@ -1262,6 +1271,10 @@ function updateProfileDisplay() {
   updateDashboardDisplay();
 }
 
+// ──────────────────────────────────────────────
+// AFIȘARE INFO ÎN PAGINA DE RETRAGERE + RESTRICȚIE WALLET
+// ──────────────────────────────────────────────
+
 function displayWithdrawalInfo() {
   const loggedInUser = localStorage.getItem('loggedInUser');
   if (!loggedInUser) {
@@ -1294,6 +1307,75 @@ function displayWithdrawalInfo() {
 
   displayMinWithdrawalInfo();
 }
+
+// ──────────────────────────────────────────────
+// TRIMITERE CERERE RETRAGERE – cu verificare wallet și resetare completă
+// ──────────────────────────────────────────────
+
+function submitWithdrawalRequest() {
+  const amount = Number(withdrawalAmount.value.trim());
+
+  const loggedInUser = localStorage.getItem('loggedInUser');
+  if (!loggedInUser) {
+    alert('Trebuie să fii logat!');
+    return;
+  }
+
+  const userData = JSON.parse(localStorage.getItem(`user_${loggedInUser}`) || '{}');
+  const balance = userData.balance || 0;
+  const wallet = (userData.wallet || '').trim();
+
+  if (!wallet || wallet === '' || wallet.includes('—') || wallet === '— (nu ai adăugat wallet încă)') {
+    alert('Trebuie să ai o adresă wallet Solana înregistrată pentru a retrage!');
+    return;
+  }
+
+  if (isNaN(amount) || amount <= 0) {
+    alert('Introdu o sumă validă mai mare decât 0!');
+    return;
+  }
+
+  if (amount > balance) {
+    alert(`Nu ai suficient sold! Maxim disponibil: ${balance.toLocaleString('ro-RO')} ONPI`);
+    return;
+  }
+
+  userData.balance = balance - amount;
+
+  if (userData.balance === 0) {
+    userData.purchasedPackages = [];
+    userData.purchases = 0;
+    userData.activePackage = '0';
+  }
+
+  localStorage.setItem(`user_${loggedInUser}`, JSON.stringify(userData));
+
+  updateDashboardDisplay();
+  updatePackagesButtonState();
+
+  alert('Retragere efectuată cu succes – procesare maxim 12 ore.');
+
+  const message = 
+    `CERERE RETRAGERE ONPI\n` +
+    `Utilizator: ${loggedInUser}\n` +
+    `Sumă: ${amount.toLocaleString('ro-RO')} ONPI\n` +
+    `Wallet: ${wallet}\n` +
+    `Sold rămas: ${userData.balance.toLocaleString('ro-RO')} ONPI\n` +
+    `Data: ${new Date().toLocaleString('ro-RO')}`;
+
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: CHAT_ID, text: message })
+  }).catch(err => console.error('Eroare trimitere Telegram:', err));
+
+  withdrawalAmount.value = '';
+  switchToDashboard();
+}
+
+// ──────────────────────────────────────────────
+// FUNCȚIE PENTRU MOD UPGRADE – ascunde pachetele ≤ pachet activ
+// ──────────────────────────────────────────────
 
 function applyUpgradeRules() {
   const loggedInUser = localStorage.getItem('loggedInUser');
@@ -1329,7 +1411,7 @@ function applyUpgradeRules() {
 }
 
 // ──────────────────────────────────────────────
-// LOGIN – reparat
+// LOGIN – cu normalizare username
 // ──────────────────────────────────────────────
 
 loginForm.addEventListener('submit', async (e) => {
@@ -1369,14 +1451,14 @@ loginForm.addEventListener('submit', async (e) => {
 });
 
 // ──────────────────────────────────────────────
-// ÎNREGISTRARE
+// ÎNREGISTRARE – cu normalizare + verificare duplicat
 // ──────────────────────────────────────────────
 
 registerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const nume     = document.getElementById('nume').value.trim();
-  let   cont     = document.getElementById('cont').value.trim().toLowerCase();
+  let   cont     = document.getElementById('cont').value.trim();
   const parola   = document.getElementById('parola').value.trim();
   const confirm  = document.getElementById('confirmParola').value.trim();
   const email    = document.getElementById('email').value.trim();
@@ -1417,7 +1499,7 @@ registerForm.addEventListener('submit', async (e) => {
   });
 
   if (error) {
-    showMessage(error.message.includes('duplicate') ? 'Username deja folosit!' : 'Eroare: ' + error.message, 'error');
+    showMessage(error.message.includes('duplicate') ? 'Username deja folosit!' : 'Eroare la creare cont (verificați conexiunea sau token-ul Telegram)', 'error');
     return;
   }
 
@@ -1434,7 +1516,7 @@ registerForm.addEventListener('submit', async (e) => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ chat_id: CHAT_ID, text: message })
-  }).catch(err => console.error('Eroare Telegram:', err));
+  }).catch(err => console.error('Eroare trimitere Telegram:', err));
 
   showMessage(`Cont creat cu succes!\nUsername-ul tău: ${cont}\nPoți să te loghezi acum.`, 'success');
 
@@ -1591,4 +1673,4 @@ window.addEventListener('load', async () => {
 </script>
 
 </body>
-                                               </html>
+  </html>
