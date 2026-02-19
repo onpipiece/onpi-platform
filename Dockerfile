@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 WORKDIR /app
 COPY package*.json ./
 # `npm ci` requires a package-lock.json; use `npm install` when lockfile is not present.

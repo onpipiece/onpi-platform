@@ -1,6 +1,9 @@
 {
   "name": "onpi-backend",
   "version": "0.1.0",
+  "engines": {
+    "node": ">=20"
+  },
   "description": "Minimal backend for ONPI platform (demo)",
   "main": "server.js",
   "scripts": {

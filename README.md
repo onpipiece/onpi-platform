@@ -4,6 +4,7 @@ Scurt: backend minimal pentru aplicația ONPI. Suportă stocare pe Supabase și 
 
 Prerechizite
 - Node 16+ / npm
+ - Node 20+ / npm
 - Cont Railway (sau alt provider) și opțional Supabase / MongoDB
 
 Variabile de mediu (completează în Railway / `.env`)
